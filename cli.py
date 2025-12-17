@@ -1,22 +1,29 @@
 """
-CryptoLens Portfolio Agent CLI
+Managlynx-Agent Portfolio CLI
 """
 
 from typing import Optional
-from core import CryptoLensAgent
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.panel import Panel
+from rich.text import Text
+from core import ManaglynxAgent
 
 
 class CLI:
-    """Clean CLI for CryptoLens portfolio agent."""
+    """Clean CLI for Managlynx-Agent portfolio manager."""
     
     def __init__(self):
         """Initialize CLI."""
-        self.agent: Optional[CryptoLensAgent] = None
+        self.agent: Optional[ManaglynxAgent] = None
+        self.console = Console()
     
     async def initialize(self):
         """Initialize the agent."""
-        self.agent = CryptoLensAgent()
-        await self.agent.initialize()
+        with self.console.status("[bold green]🚀 Initializing Managlynx-Agent...[/bold green]", spinner="dots"):
+            self.agent = ManaglynxAgent()
+            await self.agent.initialize()
+        self.console.print("[bold green]✅ Agent Ready![/bold green]")
     
     async def run(self):
         """Run the portfolio agent."""
@@ -24,14 +31,14 @@ class CLI:
         
         while True:
             try:
-                query = input("\n💬 You: ").strip()
+                query = self.console.input("\n[bold cyan]💬 You:[/bold cyan] ").strip()
                 
                 if not query:
                     continue
                 
                 # Exit commands
                 if query.lower() in ["exit", "quit", "q", "bye"]:
-                    print("\n👋 Thanks for using CryptoLens!\n")
+                    self.console.print("\n[bold yellow]👋 Thanks for using Managlynx-Agent![/bold yellow]\n")
                     await self.agent.shutdown()
                     break
                 
@@ -41,66 +48,70 @@ class CLI:
                     continue
                 
                 # Process portfolio query
-                print("\n🔍 Analyzing...\n")
-                result = await self.agent.analyze(query, session_id="session_id")
-                print(f"\n{result}\n")
-                print("─" * 70)
+                self.console.print("\n[bold purple]🔍 Analyzing...[/bold purple]")
+                
+                with self.console.status("[bold blue]Thinking...[/bold blue]", spinner="earth"):
+                     result = await self.agent.analyze(query, session_id="session_id")
+                
+                self.console.print()
+                if result:
+                    response = result.get("response", "")
+                    if not response:
+                        self.console.print("[bold red]❌ No response generated.[/bold red]")
+                        continue
+                    self.console.print(Markdown(response))
+                    self.console.print("\n[dim]" + "─" * 70 + "[/dim]")
+                else:
+                    self.console.print("[bold red]❌ No results found.[/bold red]") 
                 
             except KeyboardInterrupt:
-                print("\n\n👋 Thanks for using CryptoLens!\n")
+                self.console.print("\n\n[bold yellow]👋 Thanks for using Managlynx-Agent![/bold yellow]\n")
                 await self.agent.shutdown()
                 break
             except Exception as e:
-                print(f"\n❌ Error: {str(e)}\n")
+                self.console.print(f"\n[bold red]❌ Error:[/bold red] {str(e)}\n")
                 await self.agent.shutdown()
+                break
     
     def _print_welcome(self):
         """Print welcome message."""
-        print("\n" + "═" * 70)
-        print("  💼 CryptoLens - AI-Powered Ethereum Portfolio Agent")
-        print("═" * 70)
-        print("\n💡 Ask me anything about Ethereum wallets and portfolios!")
-        print("\n📝 Quick Examples:")
-        print("   • Show portfolio for 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045")
-        print("   • What's my ETH balance for 0x...")
-        print("   • Analyze recent transactions for 0x...")
-        print("   • Check USDC holdings at 0x...")
-        print("\n💭 Type 'help' for more examples | 'exit' to quit")
-        print("═" * 70)
-    
+        welcome_text = Text()
+        welcome_text.append("\n💼 Managlynx-Agent - Multi-Chain Portfolio Manager", style="bold cyan")
+        welcome_text.append("\nTalk to your Ethereum & Solana wallets with AI", style="italic")
+        
+        self.console.print(Panel(welcome_text, border_style="cyan"))
+        
+        self.console.print("\n[bold green]💡 Ask me anything about your portfolio![/bold green]")
+        self.console.print("\n[bold]📝 Quick Examples:[/bold]")
+        self.console.print("   • Show portfolio for [cyan]0xd8dA...[/cyan] (Vitalik)")
+        self.console.print("   • Check Solana wallet [cyan]HN7c...[/cyan]")
+        self.console.print("   • [yellow]What happened recently?[/yellow]")
+        self.console.print("\n[dim]💭 Type 'help' for more examples | 'exit' to quit[/dim]")
+        
     def _print_help(self):
         """Print help information."""
-        print("\n" + "─" * 70)
-        print("📚 CryptoLens Query Examples")
-        print("─" * 70)
-        
-        print("\n🏦 Portfolio & Balances:")
-        print("   • Show my portfolio for 0x...")
-        print("   • What's the ETH balance for 0x...")
-        print("   • Check my USDC balance at 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")
-        print("   • How much WETH do I have?")
-        
-        print("\n📊 Transactions:")
-        print("   • Show recent transactions for 0x...")
-        print("   • Analyze transaction 0x[hash]...")
-        print("   • What transactions happened this week for 0x...")
-        print("   • Show me all token transfers for 0x...")
-        
-        print("\n🪙 Token Analysis:")
-        print("   • What tokens am I holding at 0x...")
-        print("   • Tell me about token 0x... (contract address)")
-        print("   • Am I a top holder of USDC?")
-        print("   • Show ERC20 transfers for 0x...")
-        
-        print("\n🔍 Advanced:")
-        print("   • Where did my funds come from? (for address 0x...)")
-        print("   • Get metadata for address 0x...")
-        print("   • When was contract 0x... created?")
-        print("   • Show me the contract source for 0x...")
-        
-        print("\n💡 Tips:")
-        print("   • Use full addresses (0x + 40 characters)")
-        print("   • Transaction hashes are 0x + 64 characters")
-        print("   • Be specific about which address you're asking about")
-        
-        print("─" * 70)
+        help_md = """
+# 📚 CryptoLens Query Examples
+
+### 🏦 Portfolio & Balances
+* "Show my portfolio for `0x...`"
+* "Check Solana wallet `HN7c...`"
+* "How much is my wallet worth?"
+
+### 📊 Transactions
+* "Show recent transactions for `0x...`"
+* "Analyze my last 10 swaps"
+* "Export my transaction history"
+
+### 🪙 Token & NFT Analysis
+* "What is the price of SOL?"
+* "Tell me about this token"
+* "Show my NFT collection"
+
+### 🔍 Advanced
+* "Is this contract safe?"
+* "Where did my funds come from?"
+
+[dim]Tip: Use full addresses for best results![/dim]
+"""
+        self.console.print(Panel(Markdown(help_md), title="Help", border_style="blue"))

@@ -2,8 +2,8 @@
 Core components package.
 """
 
-from core.agent import CryptoLensAgent
+from .agent import ManaglynxAgent
 
 __all__ = [
-    "CryptoLensAgent",
+    "ManaglynxAgent",
 ]

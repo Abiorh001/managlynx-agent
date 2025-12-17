@@ -2661,6 +2661,7 @@ dependencies = [
     { name = "aiohttp" },
     { name = "omnicoreagent" },
     { name = "python-dotenv" },
+    { name = "rich" },
 ]
 
 [package.metadata]
@@ -2668,6 +2669,7 @@ requires-dist = [
     { name = "aiohttp", specifier = ">=3.9.0" },
     { name = "omnicoreagent", specifier = ">=0.2.10" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
+    { name = "rich", specifier = ">=14.2.0" },
 ]
 
 [[package]]

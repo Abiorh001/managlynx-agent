@@ -1,10 +1,10 @@
 """
-CryptoLens Portfolio Agent.
+Managlynx-Agent Portfolio Manager.
 AI-powered portfolio management.
 """
 
 import os
-from typing import Optional
+from typing import Optional, Dict
 from omnicoreagent import OmniAgent, MemoryRouter, EventRouter, ToolRegistry, logger
 
 from .system_prompt import SYSTEM_INSTRUCTION
@@ -12,28 +12,25 @@ from tools import register_analysis_tools, register_price_tools
 from tools.mcp_tools import MCP_SERVERS
 
 
-class CryptoLensAgent:
+class ManaglynxAgent:
     """AI-powered portfolio management"""
     
     def __init__(self):
         """
-        Initialize the CryptoLens portfolio agent.
+        Initialize the Managlynx-Agent.
         """
         self.tools: Optional[ToolRegistry] = None
         self.agent: Optional[OmniAgent] = None
         self.memory_router: Optional[MemoryRouter] = None
         self.event_router: Optional[EventRouter] = None
-        self.mcp_servers_connected: bool = False
+        self.mcp_servers_connected = False
     
     def _create_tools(self) -> ToolRegistry:
         """
-        Create and register local tools.
-        
-        Note: Contract interaction tools for Ethereum are provided by MCP server.
-        Local tools are for analysis helpers and price lookups.
+        Create and populate the tool registry.
         
         Returns:
-            Configured ToolRegistry
+            ToolRegistry with all available tools
         """
         tools = ToolRegistry()
         
@@ -44,14 +41,13 @@ class CryptoLensAgent:
         register_price_tools(tools)
         
         local_tool_count = len(tools.list_tools())
-        if local_tool_count > 0:
-            logger.info(f"✅ Registered {local_tool_count} local tool(s)")
+        logger.info(f"🔧 Registered {local_tool_count} local tools (analysis, prices)")
         
         return tools
-    
+
     async def initialize(self):
         """Initialize the agent and all components."""
-        logger.info("🚀 Initializing CryptoLens Portfolio Agent...")
+        logger.info("🚀 Initializing Managlynx-Agent...")
         
         # Create routers uncomment if you have redis or checkout the documentation
         # self.memory_router = MemoryRouter("redis")
@@ -60,31 +56,33 @@ class CryptoLensAgent:
         # Create and register tools
         self.tools = self._create_tools()
         
-        # Create the agent
+        # Initialize OmniAgent
         self.agent = OmniAgent(
-            name="cryptolens_portfolio",
+            name="managlynx_portfolio",
             system_instruction=SYSTEM_INSTRUCTION,
+            local_tools=self.tools,
+            mcp_tools=MCP_SERVERS,
+
             model_config={
                 "provider": "openai",
                 "model": "gpt-4.1",
                 "temperature": 0.1,
                 "max_context_length": 128000,
             },
-            local_tools=self.tools,
-            mcp_tools=MCP_SERVERS,
             agent_config={
                 "max_steps": 20,
                 "tool_call_timeout": 60,
+                # "request_limit": 2000,
                 "memory_config": {"mode": "token_budget", "value": 20000},
             },
             # memory_router=self.memory_router,
             # event_router=self.event_router,
-            debug=True
+            # debug=True
         )
         await self.agent.connect_mcp_servers()
         self.mcp_servers_connected = True
         
-        logger.info("✅ CryptoLens initialized successfully")
+        logger.info("✅ Managlynx-Agent initialized successfully")
        
     
     async def analyze(self, query: str, session_id: str = None) -> str:
@@ -117,5 +115,5 @@ class CryptoLensAgent:
     async def shutdown(self):
         """Shutdown the agent and all components."""
         if self.agent:
-            print("Shutting down CryptoLens agent...")
+            print("Shutting down Managlynx-Agent...")
             await self.agent.cleanup()

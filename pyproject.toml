@@ -8,4 +8,5 @@ dependencies = [
     "omnicoreagent>=0.2.10",
     "python-dotenv>=1.0.0",
     "aiohttp>=3.9.0",
+    "rich>=14.2.0",
 ]
