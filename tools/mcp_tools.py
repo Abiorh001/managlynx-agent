@@ -4,7 +4,7 @@ MCP_SERVERS = [
         "url": "https://mcp.etherscan.io/mcp",
         "transport_type": "streamable_http",
         "headers": {
-            "Authorization": "Bearer your_etherscan_api_key_here"
+            "Authorization": "Bearer your etherscan api key"
         }
     },
     {
@@ -17,7 +17,7 @@ MCP_SERVERS = [
         "command": "/home/abiorh/.cargo/bin/solscan-mcp",
         "args": [],
         "env": {
-        "SOLSCAN_API_KEY": "your_solscan_api_key_here"
+        "SOLSCAN_API_KEY": "your solscan api key"
       }
 
     }

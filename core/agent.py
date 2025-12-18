@@ -106,11 +106,11 @@ class ManaglynxAgent:
             return result
         except ValueError as e:
             # Handle specific validation errors
-            return f"❌ Input Error: {str(e)}\nInput should be a valid Ethereum address (0x...)."
+            return {"error": f"❌ Input Error: {str(e)}\nInput should be a valid Ethereum address (0x...)."}
         except Exception as e:
             # Generic catch-all with user-friendly message
             logger.error(f"❌ Analysis failed: {str(e)}")
-            return f"❌ Something went wrong: {str(e)}\n\n💡 Tip: Try checking the address or rephrasing your query."
+            return {"error": f"❌ Something went wrong: {str(e)}\n\n💡 Tip: Try checking the address or rephrasing your query."}
 
     async def shutdown(self):
         """Shutdown the agent and all components."""

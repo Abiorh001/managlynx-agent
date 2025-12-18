@@ -152,7 +152,7 @@ def register_price_tools(tools: "ToolRegistry") -> None:
         if not price_data:
             return {
                 "status": "error",
-                "error": f"Price not found for {contract_address}"
+                "message": f"Price not found for {contract_address}"
             }
         
         price = price_data.get("usd", 0)

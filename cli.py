@@ -70,8 +70,8 @@ class CLI:
                 break
             except Exception as e:
                 self.console.print(f"\n[bold red]❌ Error:[/bold red] {str(e)}\n")
-                await self.agent.shutdown()
-                break
+                continue
+               
     
     def _print_welcome(self):
         """Print welcome message."""
